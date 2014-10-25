@@ -26,6 +26,7 @@ names(data) <- colnames
 rm(colnames)
 
 #------------------- Step 2 -----------------------------------------------
+#Subset only mean and standard deviation data
 meancols <- grep("mean\\(", names(data))
 stdcols <- grep("std\\(", names(data))
 columns <- sort(c(meancols, stdcols, 562:563))
@@ -33,12 +34,14 @@ subset <- data[,columns]
 rm(meancols, stdcols, columns, data)
 
 #------------------- Step 3 -----------------------------------------------
+#Replace activity values with activity labels
 labels <- read.table("./activity_labels.txt", header = FALSE)
 activities <- as.character(labels[,2])
 subset$activity <- factor(subset$activity, levels = 1:6, labels = activities)
 rm(labels, activities)
 
 #------------------- Step 4 -----------------------------------------------
+#Add descriptive variable names
 varnames <- names(subset)
 varnames <- gsub("^([t|f])(.+)-(.+)\\(\\)-(.)", "\\2 \\3 in \\1 on the \\4 axis", varnames)
 varnames <- gsub("^([t|f])(.+)-(.+)\\(\\)$", "\\2 \\3 in \\1", varnames)
@@ -56,5 +59,8 @@ varnames <- tolower(varnames)
 names(subset) <- varnames
 
 #------------------- Step 5 -----------------------------------------------
+#Reshape data
 subsetMelt <- melt(subset, id = varnames[67:68], measure.vars = varnames[1:66])
 tidy <- dcast(subsetMelt, activity + subject ~ variable, mean)
+
+write.table(tidy, file = "./tidydata.txt", row.names = FALSE)
