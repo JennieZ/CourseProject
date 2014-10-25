@@ -63,4 +63,5 @@ names(subset) <- varnames
 subsetMelt <- melt(subset, id = varnames[67:68], measure.vars = varnames[1:66])
 tidy <- dcast(subsetMelt, activity + subject ~ variable, mean)
 
+#--------------------------------------------------------------------------
 write.table(tidy, file = "./tidydata.txt", row.names = FALSE)
